@@ -35,51 +35,72 @@ All calculations run deterministically on standard local Python runtimes without
 
 ## 🏗️ Layered Architecture & Component Workflow
 
-EcoPilot AI implements a decoupled **Presentation $\rightarrow$ Service $\rightarrow$ Repository $\rightarrow$ Persistence** pattern with strongly-typed Pydantic contracts and Role-Based Access Control (RBAC):
+EcoPilot AI implements a decoupled **Presentation → Service → Repository → Persistence** pattern with strongly-typed Pydantic contracts and Role-Based Access Control (RBAC):
 
 ```mermaid
 flowchart TD
     subgraph UI["1. Presentation Layer (app.py)"]
-        DASH[8-View Streamlit Interactive Dashboard]
-        RBAC_SEL[Sidebar Role Selector: Viewer | Analyst | Approver | Administrator]
+        DASH["8-View Streamlit Interactive Dashboard"]
+        RBAC_SEL["Sidebar Role Selector: Viewer / Analyst / Approver / Administrator"]
     end
 
-    subgraph SCHEMAS["2. Typed Contracts & Configuration (src/schemas.py & src/config.py)"]
-        CONF[Centralized Settings: Development | Test | Production]
-        SCH[Pydantic Models: Quality Reports, Alerts, Recommendations, Forecasts, Verifications]
+    subgraph SCHEMAS["2. Typed Contracts and Configuration (src/schemas.py and src/config.py)"]
+        CONF["Centralized Settings: Development / Test / Production"]
+        SCH["Pydantic Models: Quality Reports, Alerts, Recommendations, Forecasts, Verifications"]
     end
 
-    subgraph SERVICES["3. Service Layer (src/services.py & src/auth.py)"]
-        AUTH[@require_permission RBAC Guard]
-        EDS[EnergyDataService: Ingest, Sanitize, Impute, TZ-Normalize]
-        ANS[AnalyticsService: Robust Z-Score, Isolation Forest, Forecast Tournament]
-        RCS[RecommendationService: Multi-Factor Priority Scoring & Decision Lifecycles]
-        SIMS[SavingsSimulatorService: Multi-Action Overlap Deduplication & ToD]
-        VFS[VerificationService: Counterfactuals & Weather Normalization]
-        SAS[SystemAdminService: System Health & Protected DB Reset]
+    subgraph SERVICES["3. Service Layer (src/services.py and src/auth.py)"]
+        AUTH["@require_permission RBAC Guard"]
+        EDS["EnergyDataService: Ingest, Sanitize, Impute, TZ-Normalize"]
+        ANS["AnalyticsService: Robust Z-Score, Isolation Forest, Forecast Tournament"]
+        RCS["RecommendationService: Multi-Factor Priority Scoring and Decision Lifecycles"]
+        SIMS["SavingsSimulatorService: Multi-Action Overlap Deduplication and ToD"]
+        VFS["VerificationService: Counterfactuals and Weather Normalization"]
+        SAS["SystemAdminService: System Health and Protected DB Reset"]
     end
 
     subgraph REPOSITORIES["4. Repository Layer (src/repositories.py)"]
-        R_REC[RecommendationRepository]
-        R_ALT[AlertRepository]
-        R_VER[VerificationRepository]
-        R_SIM[SimulationRepository]
-        R_UPL[DatasetUploadRepository]
-        R_ADM[DatabaseAdminRepository]
+        R_REC["RecommendationRepository"]
+        R_ALT["AlertRepository"]
+        R_VER["VerificationRepository"]
+        R_SIM["SimulationRepository"]
+        R_UPL["DatasetUploadRepository"]
+        R_ADM["DatabaseAdminRepository"]
     end
 
     subgraph PERSISTENCE["5. Persistence Layer (src/database.py)"]
-        MIGR[Auto-Migrating SQLite Engine: 001 to 004]
-        WAL[(SQLite WAL Database + Foreign Key Constraints)]
-        AUDIT[(admin_audit_log & recommendation audit_log)]
+        MIGR["Auto-Migrating SQLite Engine: 001 to 004"]
+        WAL[("SQLite WAL Database + Foreign Key Constraints")]
+        AUDIT[("admin_audit_log and recommendation audit_log")]
     end
 
-    UI --> SERVICES
-    CONF --> SERVICES
-    SCH --> SERVICES
-    SERVICES --> AUTH
-    SERVICES --> REPOSITORIES
-    REPOSITORIES --> PERSISTENCE
+    DASH --> AUTH
+    RBAC_SEL --> AUTH
+    CONF -.-> AUTH
+    SCH -.-> AUTH
+    AUTH --> EDS
+    AUTH --> ANS
+    AUTH --> RCS
+    AUTH --> SIMS
+    AUTH --> VFS
+    AUTH --> SAS
+    EDS --> R_REC
+    EDS --> R_ALT
+    ANS --> R_ALT
+    RCS --> R_REC
+    SIMS --> R_SIM
+    VFS --> R_VER
+    SAS --> R_UPL
+    SAS --> R_ADM
+    R_REC --> WAL
+    R_ALT --> WAL
+    R_VER --> WAL
+    R_SIM --> WAL
+    R_UPL --> WAL
+    R_ADM --> WAL
+    R_ADM --> MIGR
+    R_REC --> AUDIT
+    R_ADM --> AUDIT
 ```
 
 ---
