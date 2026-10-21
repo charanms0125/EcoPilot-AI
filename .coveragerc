@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = src
+omit = 
+    tests/*
+    */__pycache__/*
+
+[report]
+show_missing = True
+precision = 2
+fail_under = 80

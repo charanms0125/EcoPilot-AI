@@ -1,0 +1,44 @@
+# EcoPilot AI - Python Environment & Runtime Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Streamlit
+.streamlit/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & models
+*.db
+*.sqlite3
+models/*.joblib
+models/*.pkl
+
+# Environment variables & secrets
+.env
+.env.local
+*.env
